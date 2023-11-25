@@ -1,5 +1,6 @@
 $script:apiURL1 = "https://api-web.nhle.com/v1"
 $script:apiURL2 = "https://api.nhle.com"
+$script:cacheMins = "30"
 
 function Invoke-ApiCall {
     Param (
@@ -128,6 +129,11 @@ function Get-TeamRoster {
 
     # If neither get all team rosters
     if ((!$PSBoundParameters.ContainsKey('ID')) -and ((!$PSBoundParameters.ContainsKey('triCode')))) {
+        # See if we have cached the results
+        $cache = Get-CacheResults -fileName NHLRoster.json
+        if ($cache) {
+            return $cache
+        }
         # First get all teams
         $allTeams = Get-Team
         Write-Verbose "Found $($allTeams.Count) teams"
@@ -155,7 +161,7 @@ function Get-TeamRoster {
             $PercentComplete = ([math]::ceiling(($i / $allTeams.Count) * 100))
             Write-Progress -Activity "Retrieving Team Rosters" -Status "$PercentComplete% Complete:" -PercentComplete $PercentComplete
         }
-        CacheResults -fileName NHLRoster.json
+        Cache-Results -fileName NHLRoster.json -data $rosterReturn
         return $rosterReturn
     }
 }
@@ -179,11 +185,11 @@ function Get-Player {
         [String]
         $lastName
     )
+    $callMethod = "GET"
+    $apiURL = $script:apiURL1
 
     # If ID is set - ignore all other parameters - get player info
     if ($ID) {
-        $callMethod = "GET"
-        $apiURL = $script:apiURL1
         $urlTemplate = "/player/$ID/landing"
 
         $results = Invoke-ApiCall -callMethod $callMethod -apiURL $apiURL -urlTemplate $urlTemplate
@@ -196,39 +202,92 @@ function Get-Player {
     } else {
         $nhlRoster = Get-TeamRoster
         if (($PSBoundParameters.ContainsKey('firstName')) -and (($PSBoundParameters.ContainsKey('lastName')))) {
-            return $nhlRoster | Where-Object {$_.firstName.default -like $firstName -and $_.lastName.default -like $lastName}
+            $foundPlayers = $nhlRoster | Where-Object {$_.firstName.default -like $firstName -and $_.lastName.default -like $lastName}
         } 
         if ($PSBoundParameters.ContainsKey('firstName')) {
-            return $nhlRoster | Where-Object {$_.firstName.default -like $firstName}
+            $foundPlayers = $nhlRoster | Where-Object {$_.firstName.default -like $firstName}
         }
     
         if ($PSBoundParameters.ContainsKey('lastName')) {
-            return $nhlRoster | Where-Object {$_.lastName.default -like $lastName}
+            $foundPlayers = $nhlRoster | Where-Object {$_.lastName.default -like $lastName}
         }
+
+        # if (!$foundPlayers) {
+        #     Write-Error "No players found with inputted criteria"
+        #     return $false | Out-Null
+        # }
+
+        $return = @()
+        foreach ($player in $foundPlayers) {
+            $ID = $player.id
+            $urlTemplate = "/player/$ID/landing"
+            $results = Invoke-ApiCall -callMethod $callMethod -apiURL $apiURL -urlTemplate $urlTemplate
+            $return+=$results
+        }
+
+        return $return
     }
 }
 
 function Cache-Results {
     Param
     (
-        [parameter(Mandatory=$false)]
+        [parameter(Mandatory=$true)]
         [String]
-        $fileName
+        $fileName,
+                
+        [parameter(Mandatory=$true)]
+        [PSCustomObject[]]
+        $data
     )
 
-    Write-Host "No functionality yet"
+    if (!(Test-Path -Path ./.cache)) {
+        Write-Warning "No cache directory present - creating.."
+        New-Item -ItemType Directory -Path ./.cache
+    }
+
+    if (!(Test-Path -Path ./.cache/$fileName)) {
+        Write-Warning "No file ./.cache/$fileName present - creating.."
+        New-Item -ItemType File -Path ./.cache/ -Name $fileName
+    }
+
+    $date = Get-Date
+    $jsonData = $data | ConvertTo-Json
+    $content = @"
+    {
+        "cacheTime": "$date",
+        "data": $jsonData
+    }
+"@
+
+    Set-Content -Path ./.cache/$fileName -Value $content
 }
 
 function Get-CacheResults {
     Param
     (
-        [parameter(Mandatory=$false)]
+        [parameter(Mandatory=$true)]
         [String]
         $fileName
     )
 
     # Check if file exists
     if (Test-Path -Path ./.cache/$fileName) {
-        Write-Host "FilePath exists!"
+        $content = Get-Content -Path ./.cache/$fileName | ConvertFrom-Json
+
+        if (!$content.cacheTime) {
+            Write-Warning "Cache file $fileName is corrupted - will continue and rebuild post function"
+            return $false | Out-Null
+        } else {
+            if (((Get-Date).AddMinutes(-$script:cacheMins)) -lt ($content.cacheTime)) {
+                return $content.data
+            } else {
+                Write-Warning "File cache of $fileName is not valid anymore"
+                return $false | Out-Null
+            }
+        }
+    } else {
+        # Write-Warning "Cache file file does not exist"
+        return $false | Out-Null
     }
 }
