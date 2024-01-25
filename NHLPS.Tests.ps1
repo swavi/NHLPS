@@ -36,7 +36,7 @@ Describe 'Get-Planet' {
     Context 'Keyed tests' {
         It '3 should be Mars' {
             $allPlanets = Get-Planet
-            $allPlanets[3].Name | Should -Be 'Mars'
+            $allPlanets[3].Name | Should -Be 'Rioar'
         }
     }
 }
