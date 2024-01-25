@@ -15,20 +15,13 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  test:
+  pester-test:
+    name: Pester test
     runs-on: ubuntu-latest
     steps:
-      - name: test module
-        id: test_module
-        uses: zyborg/pester-tests-report@v1
-        with:
-          # include_paths: Tests
-          report_name: NHLPS Pester Tests
-          report_title: NHLPS Pester Tests
-          # github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: dump test results
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Perform a Pester test from the Tests.ps1 file
         shell: pwsh
         run: |
-          Write-Host 'Total Tests Executed...:  ${{ steps.test_module.outputs.total_count }}'
-          Write-Host 'Total Tests PASSED.....:  ${{ steps.test_module.outputs.passed_count }}'
-          Write-Host 'Total Tests FAILED.....:  ${{ steps.test_module.outputs.failed_count }}'
+          Invoke-Pester NHLPS.Tests.ps1 -Passthru
