@@ -229,6 +229,59 @@ function Get-Player {
     }
 }
 
+function Get-PlayerSchedule {
+
+}
+
+function Get-TeamSchedule {
+    Param
+    (
+        [parameter(Mandatory=$false)]
+        [String]
+        $triCode,
+
+        [parameter(Mandatory=$false)]
+        [ValidateSet("Day", "Week", "Month", "Year", IgnoreCase = $false)]
+        [String]
+        $period,
+
+        [parameter(Mandatory=$false)]
+        [String]
+        $date
+    )
+
+    # If both are set - return out, 
+    if (($PSBoundParameters.ContainsKey('ID')) -and (($PSBoundParameters.ContainsKey('triCode')))) {
+        Write-Error "Do not call function with both ID and triCode set"
+        return $false | Out-Null
+    }
+
+    $callMethod = "GET"
+    $apiURL = $script:apiURL1
+    switch ($period) {
+        "Day" {
+            $urlTemplate = "/club-schedule/"
+        }
+        "Week" {
+            $urlTemplate = "/club-schedule/"
+        }
+        "Month" {
+            $urlTemplate = "/club-schedule/"
+        }
+        "Year" {
+            $urlTemplate = "club-schedule-season/"
+        }
+    }
+
+    # If tricode is set get schedule for one team only
+    if ($PSBoundParameters.ContainsKey('triCode')) {
+        $urlTemplate += $triCode
+    # else get schedules for all teams
+    } else {
+        
+    }
+}
+
 function Invoke-CacheResults {
     Param
     (

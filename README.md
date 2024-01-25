@@ -17,7 +17,7 @@ Due to being limited by the official NHL APIs there are a few  calls that are ho
 - **Description**: Retrieve player/s and their detailed statistics. Can search on <strong>firstName</strong> & <strong>lastName</strong> or use <strong>ID</strong>
 - **Parameters**:
   - `ID` (int) - Player ID
-  - `firstName` (string) - exact match of first name of player
+  - `firstName` (string) - exact match of first name of playerSame
   - `lastName` (string) - exact match of last name of player
 - **Response**: [PSCustomObject[]]
 
