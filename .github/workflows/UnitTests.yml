@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   PSScriptAnalyzer-lint:
-    name: NHLPS PSScriptAnalyzer Lint
+    name: PSScriptAnalyzer Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
               Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
           }
   pester-test:
-    name: NHLPS Pester Tests
+    name: Pester Tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -46,3 +46,14 @@ jobs:
         shell: pwsh
         run: |
           Invoke-Pester NHLPS.Tests.ps1 -Passthru
+  job:
+    name: "Deploy to PSGallery"
+    runs-on: ubuntu-latest
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+    needs: [PSScriptAnalyzer-lint, pester-test]
+    steps:
+      - name: Hello World        
+        env:
+          NEEDS: ${{ toJSON(needs) }}     
+        run: |
+          echo "$NEEDS"
