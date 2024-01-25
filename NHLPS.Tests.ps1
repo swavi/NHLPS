@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     function Get-Planet ([string]$Name = '*') {
         $planets = @(
             @{ Name = 'Mercury' }
@@ -27,7 +27,7 @@ Describe 'Get-Planet' {
         It 'Earth Bruh' {
             $allPlanets = Get-Planet
             $allPlanets[2].Name | Should -Be 'Earth'
-        }    
+        }
         It 'Earth Bruh' {
             $allPlanets = Get-Planet
             $allPlanets[2].Name | Should -Be 'Earth'
