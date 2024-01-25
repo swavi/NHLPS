@@ -15,7 +15,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  PSScriptAnalyzer-lint:
+  PSScriptAnalyzer_lint:
     name: PSScriptAnalyzer Lint
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +36,7 @@ jobs:
           } else {
               Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
           }
-  pester-test:
+  pester_test:
     name: Pester Tests
     runs-on: ubuntu-latest
     steps:
@@ -49,8 +49,8 @@ jobs:
   job:
     name: "Deploy to PSGallery"
     runs-on: ubuntu-latest
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
-    needs: [PSScriptAnalyzer-lint, pester-test]
+    if: ${{ always() && (needs.pester_test.result == 'success' || needs.PSScriptAnalyzer_lint.result == 'success') }}
+    needs: [PSScriptAnalyzer_lint, pester_test]
     steps:
       - name: Hello World        
         env:
