@@ -49,7 +49,7 @@ jobs:
   job:
     name: "Deploy to PSGallery"
     runs-on: ubuntu-latest
-    if: ${{ always() && (needs.pester_test.result == 'success' || needs.PSScriptAnalyzer_lint.result == 'success') }}
+    if: ${{ (needs.pester_test.result == 'success' || needs.PSScriptAnalyzer_lint.result == 'success') }}
     needs: [PSScriptAnalyzer_lint, pester_test]
     steps:
       - name: Hello World        
