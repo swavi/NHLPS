@@ -22,7 +22,7 @@ jobs:
         id: test_module
         uses: zyborg/pester-tests-report@v1
         with:
-          include_paths: Tests
+          # include_paths: Tests
           report_name: NHLPS Pester Tests
           report_title: NHLPS Pester Tests
           # github_token: ${{ secrets.GITHUB_TOKEN }}
