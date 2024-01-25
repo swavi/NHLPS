@@ -1,42 +1,61 @@
-﻿BeforeAll {
-    function Get-Planet ([string]$Name = '*') {
-        $planets = @(
-            @{ Name = 'Mercury' }
-            @{ Name = 'Venus'   }
-            @{ Name = 'Earth'   }
-            @{ Name = 'Mars'    }
-            @{ Name = 'Jupiter' }
-            @{ Name = 'Saturn'  }
-            @{ Name = 'Uranus'  }
-            @{ Name = 'Neptune' }
-        ) | ForEach-Object { [PSCustomObject] $_ }
+﻿# Import module and force override if currently loaded
+BeforeAll {
+    Import-Module .\NHLPS.psd1 -Force
+}
 
-        $planets | Where-Object { $_.Name -like $Name }
+Describe 'Cache functions' {
+    It 'Can load cache from public API' {
+        $data = NHLPS\Get-TeamRoster -forceCacheReload
+        $data.Count | Should -BeGreaterOrEqual 1
+    }
+
+    It 'Can load cache from generated file' {
+        $content = Get-Content -Path ./.cache/NHLRoster.json | ConvertFrom-Json
+        $content.cacheTime | Should -BeLessThan (Get-Date)
+    }
+
+    It 'Can load cache using function' {
+        $data = NHLPS\Get-CacheResults -fileName NHLRoster.json
+        $data.Count | Should -BeGreaterOrEqual 1
     }
 }
 
-Describe 'Get-Planet' {
-    It 'Given no parameters, it lists all 8 planets' {
-        $allPlanets = Get-Planet
-        $allPlanets.Count | Should -Be 8
+Describe 'Player functions' {
+    Context 'Get-Player' {
+        It 'Can load player using ID' {
+            $player = NHLPS\Get-Player -ID 8484153
+            $player.firstName.default | Should -Be "Leo"
+            $player.lastName.default | Should -Be "Carlsson"
+        }        
+        
+        It 'Can load player using firstName' {
+            $player = NHLPS\Get-Player -firstName "Leo"
+            $player.firstName.default | Should -Be "Leo"
+        }
+
+        It 'Can load player using lastName' {
+            $player = NHLPS\Get-Player -lastName "Carlsson"
+            $player.lastName.default | Should -Be "Carlsson"
+        }
     }
 }
 
-Describe 'Get-Planet' {
-    Context 'no parameters' {
-        It 'Earth Bruh' {
-            $allPlanets = Get-Planet
-            $allPlanets[2].Name | Should -Be 'Earth'
+Describe 'Team functions' {
+    Context 'Get-Player' {
+        It 'Can load player using ID' {
+            $player = NHLPS\Get-Player -ID 8484153
+            $player.firstName.default | Should -Be "Leo"
+            $player.lastName.default | Should -Be "Carlsson"
+        }        
+        
+        It 'Can load player using firstName' {
+            $player = NHLPS\Get-Player -firstName "Leo"
+            $player.firstName.default | Should -Be "Leo"
         }
-        It 'Earth Bruh' {
-            $allPlanets = Get-Planet
-            $allPlanets[2].Name | Should -Be 'Earth'
-        }
-    }
-    Context 'Keyed tests' {
-        It '3 should be Mars' {
-            $allPlanets = Get-Planet
-            $allPlanets[3].Name | Should -Be 'Rioar'
+
+        It 'Can load player using lastName' {
+            $player = NHLPS\Get-Player -lastName "Carlsson"
+            $player.lastName.default | Should -Be "Carlsson"
         }
     }
 }

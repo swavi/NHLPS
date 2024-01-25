@@ -79,7 +79,11 @@ function Get-TeamRoster {
 
         [parameter(Mandatory=$false)]
         [String]
-        $triCode
+        $triCode,
+
+        [parameter(Mandatory=$false)]
+        [Switch]
+        $forceCacheReload
     )
     # If both are set - return out, 
     if (($PSBoundParameters.ContainsKey('ID')) -and (($PSBoundParameters.ContainsKey('triCode')))) {
@@ -130,9 +134,11 @@ function Get-TeamRoster {
     # If neither get all team rosters
     if ((!$PSBoundParameters.ContainsKey('ID')) -and ((!$PSBoundParameters.ContainsKey('triCode')))) {
         # See if we have cached the results
-        $cache = Get-CacheResults -fileName NHLRoster.json
-        if ($cache) {
-            return $cache
+        if (!$forceCacheReload) {
+            $cache = Get-CacheResults -fileName NHLRoster.json
+            if ($cache) {
+                return $cache
+            }
         }
         # First get all teams
         $allTeams = Get-Team

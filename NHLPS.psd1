@@ -70,6 +70,8 @@ Copyright = '(c) swavi. All rights reserved.'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
+    "Invoke-CacheResults",
+    "Get-CacheResults",
     "Get-Player",
     "Get-Team",
     "Get-TeamRoster"
