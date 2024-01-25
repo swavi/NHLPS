@@ -1,6 +1,6 @@
 $script:apiURL1 = "https://api-web.nhle.com/v1"
 $script:apiURL2 = "https://api.nhle.com"
-$script:cacheMins = "30"
+$script:cacheMins = "60"
 
 function Invoke-ApiCall {
     Param (
@@ -161,7 +161,7 @@ function Get-TeamRoster {
             $PercentComplete = ([math]::ceiling(($i / $allTeams.Count) * 100))
             Write-Progress -Activity "Retrieving Team Rosters" -Status "$PercentComplete% Complete:" -PercentComplete $PercentComplete
         }
-        Cache-Results -fileName NHLRoster.json -data $rosterReturn
+        Invoke-CacheResults -fileName NHLRoster.json -data $rosterReturn
         return $rosterReturn
     }
 }
@@ -229,7 +229,7 @@ function Get-Player {
     }
 }
 
-function Cache-Results {
+function Invoke-CacheResults {
     Param
     (
         [parameter(Mandatory=$true)]
@@ -279,10 +279,18 @@ function Get-CacheResults {
             Write-Warning "Cache file $fileName is corrupted - will continue and rebuild post function"
             return $false | Out-Null
         } else {
-            if (((Get-Date).AddMinutes(-$script:cacheMins)) -lt ($content.cacheTime)) {
+            $date = [System.DateTime]$($content.cacheTime)
+            $date2 = [System.DateTime]$(Get-Date)
+            $difference = New-TimeSpan -start $date -end $date2
+            $totalMins = 0
+            $totalMins = $totalMins + $difference.Minutes
+            $totalMins = $totalMins + (1440 * $difference.Days)
+            $totalMins = $totalMins + (60 * $difference.Hours)
+            
+            if ($totalMins -lt $script:cacheMins) {
                 return $content.data
             } else {
-                Write-Warning "File cache of $fileName is not valid anymore"
+                Write-Warning "$fileName cache has expired - regenerating from API..."
                 return $false | Out-Null
             }
         }

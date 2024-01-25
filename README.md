@@ -3,7 +3,6 @@
 A PowerShell module that utilises public NHL APIs to retrieve and display data
 
 ## Overview
-
 The NHLPS module at the moment only works with current NHL players and current NHL team rosters. If a player is not part of the NHL or on an active roster, they will not appear in searches.
 
 ## Caching
@@ -103,3 +102,7 @@ sweaterNumber
            93
 ```
 </details>
+
+## Credit
+A huge credit goes to Zmalski on GitHub for compiling the most comprehensive list / documentation of the new NHL APIs.
+https://github.com/Zmalski/NHL-API-Reference
