@@ -1,8 +1,8 @@
 # NHLPS
-
-A PowerShell module that utilises public NHL APIs to retrieve and display data
+[![CI](https://github.com/swavi/NHLPS/actions/workflows/Tests-and-deploy.yml/badge.svg)](https://github.com/swavi/NHLPS/actions/workflows/Tests-and-deploy.yml)
 
 ## Overview
+A PowerShell module that utilises public NHL APIs to retrieve and display data <br>
 The NHLPS module at the moment only works with current NHL players and current NHL team rosters. If a player is not part of the NHL or on an active roster, they will not appear in searches.
 
 ## Caching
