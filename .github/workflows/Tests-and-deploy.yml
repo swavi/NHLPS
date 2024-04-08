@@ -39,7 +39,7 @@ jobs:
       - name: Test Module Manifest
         shell: pwsh
         run: |
-          Test-ModuleManifest -Path *.psd1
+          Test-ModuleManifest -Path ./NHLPS/*.psd1
   pester_test:
     name: Pester Tests
     runs-on: ubuntu-latest
