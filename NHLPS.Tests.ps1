@@ -1,6 +1,6 @@
 ﻿# Import module and force override if currently loaded
 BeforeAll {
-    Import-Module .\NHLPS.psd1 -Force
+    Import-Module .\NHLPS\NHLPS.psd1 -Force
 }
 
 Describe 'Cache functions' {
