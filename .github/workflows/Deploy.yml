@@ -1,4 +1,4 @@
-name: Pre-Merge Tests
+name: Deployment
 
 # Controls when the workflow will run
 on:
