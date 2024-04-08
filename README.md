@@ -1,5 +1,5 @@
 # NHLPS
-[![CI](https://github.com/swavi/NHLPS/actions/workflows/Tests-and-deploy.yml/badge.svg)](https://github.com/swavi/NHLPS/actions/workflows/Tests-and-deploy.yml)
+[![CI](https://github.com/swavi/NHLPS/actions/workflows/Tests.yml/badge.svg)](https://github.com/swavi/NHLPS/actions/workflows/Tests.yml)
 
 ## Overview
 A PowerShell module that utilises public NHL APIs to retrieve and display data <br>
