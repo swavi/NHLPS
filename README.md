@@ -95,7 +95,7 @@ currentTeamRoster   : {@{playerId=8484153; lastName=; firstName=; playerSlug=leo
     <summary>Example return specific property</summary>
 
 ```
-Get-Player -ID 8476459 | Select-Object -Property sweaterNumber
+Get-Player -ID 8476459 | Select -ExpandProperty sweaterNumber
 
 sweaterNumber
 -------------
