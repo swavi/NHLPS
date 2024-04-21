@@ -23,7 +23,7 @@ jobs:
             $gitVersion = Import-PowerShellDataFile -Path "./NHLPS/NHLPS.psd1" | Select -ExpandProperty "ModuleVersion"
             if ($gitVersion -gt $publishedVersion) {
                 Write-Host "Module manifest version $gitVersion IS greater than PSGallery version $publishedVersion" -ForeGroundColor "Green"
-                Write-Host "Skipping deployment to PSGallery" -ForeGroundColor "Green"
+                Write-Host "Deploying NHLPS to PSGallery - https://www.powershellgallery.com/packages/NHLPS/$gitVersion" -ForeGroundColor "Green"
 
                 Publish-Module -Path "./NHLPS/" -NugetAPIKey "${{ secrets.NUGETAPIKEY }}" 
             } else {
