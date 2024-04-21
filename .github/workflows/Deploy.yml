@@ -15,9 +15,10 @@ jobs:
     name: "Deploy to PSGallery"
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to PSGallery
-        shell: pwsh
-        run: |
+        - uses: actions/checkout@v4
+        - name: Deploy to PSGallery
+          shell: pwsh
+          run: |
             $publishedVersion = Find-Module -Name NHLPS | Select -ExpandProperty "Version"
             $gitVersion = Import-PowerShellDataFile -Path "./NHLPS/NHLPS.psd1" | Select -ExpandProperty "ModuleVersion"
             if ($gitVersion -gt $publishedVersion) {
