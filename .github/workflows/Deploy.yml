@@ -15,8 +15,16 @@ jobs:
     name: "Deploy to PSGallery"
     runs-on: ubuntu-latest
     steps:
-      - name: Hello World        
-        env:
-          NEEDS: ${{ toJSON(needs) }}     
+      - name: Deploy to PSGallery
         run: |
-          echo "$NEEDS"
+            $publishedVersion = Find-Module -Name NHLPS | Select -ExpandProperty "Version"
+            $gitVersion = Import-PowerShellDataFile -Path ".\NHLPS\NHLPS.psd1" | Select -ExpandProperty "ModuleVersion"
+            if ($gitVersion -gt $publishedVersion) {
+                Write-Host "Module manifest version $gitVersion IS greater than PSGallery version $publishedVersion" -ForeGroundColor "Green"
+                Write-Host "Skipping deployment to PSGallery" -ForeGroundColor "Green"
+
+                Publish-Module -Path ".\NHLPS\" -NugetAPIKey "${{ secrets.NUGETAPIKEY }}" -Verbose -WhatIf
+            } else {
+                Write-Warning "Module manifest version $gitVersion NOT greater than PSGallery version $publishedVersion"
+                Write-Warning "Skipping deployment to PSGallery"
+            }
