@@ -32,7 +32,6 @@ function Invoke-ApiCall {
 }
 
 function Get-Team {
-    # another change
     Param
     (
         [parameter(Mandatory=$false)]
